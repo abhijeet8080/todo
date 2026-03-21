@@ -33,7 +33,7 @@ export default function Home() {
   };
 
   const deleteTodo = (id: number) => {
-    setTodos((current) => current.filter((todo) => todo.id !== id));
+    setTodos((current) => current.filter((todo) => todo.id === id));
   };
 
   const pendingCount = useMemo(

@@ -28,7 +28,7 @@ export default function Home() {
   const toggleTodo = (id: number) => {
     setTodos((current) =>
       current.map((todo) =>
-        todo.id === id ? { ...todo, done: !todo.done } : todo,
+        todo.id === id ? { ...todo, done: !todo.done } : { ...todo, done: !todo.done },
       ),
     );
   };

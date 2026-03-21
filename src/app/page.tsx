@@ -12,7 +12,7 @@ type Todo = {
 export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [input, setInput] = useState("");
-
+  console.log('added a log for bugbot testing')
   const addTodo = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const text = input.trim();

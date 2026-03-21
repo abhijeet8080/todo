@@ -1,65 +1,93 @@
-import Image from "next/image";
+"use client";
+
+import { FormEvent, useState } from "react";
 import styles from "./page.module.css";
 
+type Todo = {
+  id: number;
+  text: string;
+  done: boolean;
+};
+
 export default function Home() {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [input, setInput] = useState("");
+
+  const addTodo = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const text = input.trim();
+    if (!text) {
+      return;
+    }
+
+    setTodos((current) => [
+      { id: Date.now(), text, done: false },
+      ...current,
+    ]);
+    setInput("");
+  };
+
+  const toggleTodo = (id: number) => {
+    setTodos((current) =>
+      current.map((todo) =>
+        todo.id === id ? { ...todo, done: !todo.done } : todo,
+      ),
+    );
+  };
+
+  const deleteTodo = (id: number) => {
+    setTodos((current) => current.filter((todo) => todo.id !== id));
+  };
+
+  const pendingCount = todos.filter((todo) => !todo.done).length;
+
   return (
     <div className={styles.page}>
       <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+        <h1 className={styles.title}>Todo App</h1>
+        <p className={styles.subtitle}>{pendingCount} task(s) remaining</p>
+
+        <form className={styles.form} onSubmit={addTodo}>
+          <input
+            className={styles.input}
+            type="text"
+            value={input}
+            onChange={(event) => setInput(event.target.value)}
+            placeholder="Add a new task"
+            aria-label="New todo"
+          />
+          <button className={styles.addButton} type="submit">
+            Add
+          </button>
+        </form>
+
+        {todos.length === 0 ? (
+          <p className={styles.empty}>No tasks yet.</p>
+        ) : (
+          <ul className={styles.list}>
+            {todos.map((todo) => (
+              <li className={styles.item} key={todo.id}>
+                <label className={styles.checkboxWrap}>
+                  <input
+                    type="checkbox"
+                    checked={todo.done}
+                    onChange={() => toggleTodo(todo.id)}
+                  />
+                  <span className={todo.done ? styles.doneText : styles.todoText}>
+                    {todo.text}
+                  </span>
+                </label>
+                <button
+                  className={styles.deleteButton}
+                  type="button"
+                  onClick={() => deleteTodo(todo.id)}
+                >
+                  Delete
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
       </main>
     </div>
   );

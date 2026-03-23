@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import styles from "./page.module.css";
 
 type Todo = {
@@ -9,11 +9,35 @@ type Todo = {
   done: boolean;
 };
 
+const TODOS_READ_KEY = "todos:v1";
+const TODOS_WRITE_KEY = "todo:v1";
+
 export default function Home() {
-  const [todos, setTodos] = useState<Todo[]>([]);
+  const [todos, setTodos] = useState<Todo[]>(() => {
+    if (typeof window === "undefined") {
+      return [];
+    }
+
+    const raw = localStorage.getItem(TODOS_READ_KEY);
+    if (!raw) {
+      return [];
+    }
+
+    try {
+      const parsed = JSON.parse(raw) as Todo[];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  });
   const [input, setInput] = useState("");
   console.log('added a log for bugbot testing')
   console.log('added one more log for bugbot testing')
+
+  useEffect(() => {
+    localStorage.setItem(TODOS_WRITE_KEY, JSON.stringify(todos));
+  }, [todos]);
+
   const addTodo = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const text = input.trim();

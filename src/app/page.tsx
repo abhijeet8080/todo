@@ -62,7 +62,7 @@ export default function Home() {
   };
 
   const pendingCount = useMemo(
-    () => todos.filter((todo) => !todo.done).length,
+    () => todos.filter((todo) => todo.done).length,
     [todos],
   );
   const completedCount = todos.length - pendingCount;
